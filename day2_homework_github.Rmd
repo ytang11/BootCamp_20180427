@@ -1,0 +1,58 @@
+---
+title: "day2_homework"
+author: "Yan Tang"
+date: "April 21, 2018"
+output:
+  html_document: default
+runtime: shiny
+---
+
+Choose a parameter:
+```{r echo = FALSE}
+library(shiny)
+library(gapminder)
+library(reshape2)
+library(ggplot2)
+data(gapminder)
+Select=c("lifeExp", "pop","gdpPercap")
+iSelect=1
+for (iSelect in 1:length(Select))
+{
+  assign(Select[iSelect],
+         gapminder[,c(1:3,which(names(gapminder)==Select[iSelect]))])
+}
+selectInput("data","",
+  c("lifeExp", "pop","gdpPercap"))
+```
+See a plot:
+```{r echo = FALSE,fig.width=100, fig.height=10}
+renderPlot({
+  d <- get(input$data)
+  if (input$data=="lifeExp"){
+    ggplot(d,aes(x=factor(year),y=lifeExp,color=continent))+
+      geom_violin()+
+      xlab("year")+
+      theme_dark()
+    }else if (input$data=="pop"){
+      ggplot(d,aes(x=factor(year),y=pop,color=continent))+
+      geom_boxplot()+
+      scale_y_log10()+
+      facet_grid(~continent)+
+      theme(axis.text.x = element_text(angle = 90))
+  }else{
+    ggplot(d,aes(x=factor(year),y=gdpPercap,color=continent))+
+      geom_bar(stat="identity",position="fill")+
+      xlab("year")+
+      theme_minimal()
+  }})
+```
+
+# TWO additional R resources that I find useful:
+## 1. [R reference card](https://cran.r-project.org/doc/contrib/Short-refcard.pdf):
+
+4-page PDF of function names and formats
+
+##2. [Cookbook for R](http://www.cookbook-r.com/):
+
+provide solutions to common tasks and problems in analyzing data
+
